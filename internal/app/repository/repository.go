@@ -130,7 +130,7 @@ func (r *Repository) GetIndexesByName(name string) ([]Index, error) {
 }
 
 
-func (r *Repository) GetResearchIndexes(id int) []Index {
+func (r *Repository) GetOrderIndexes(id int) []Index {
   requestIndexes := map[int][]int{1: {1, 3, 5}}
   var indexesInGroup []Index
   for _, indexID := range requestIndexes[id] {
@@ -142,10 +142,10 @@ func (r *Repository) GetResearchIndexes(id int) []Index {
   return indexesInGroup
 }
 
-func (r *Repository) GetResearchCount(id int) int {
-	return len(r.GetResearchIndexes(id))
+func (r *Repository) GetOrderCount(id int) int {
+	return len(r.GetOrderIndexes(id))
 }
 
-func (r *Repository) GetResearchId() int {
+func (r *Repository) GetOrderId() int {
   return 1
 }

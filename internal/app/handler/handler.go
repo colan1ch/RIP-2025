@@ -41,8 +41,8 @@ func (h *Handler) GetIndexes(ctx *gin.Context) {
 		"time":          time.Now().Format("15:04:05"),
 		"indexes":       indexes,
 		"query":         searchQuery,
-		"researchId":    h.Repository.GetResearchId(),
-		"researchCount": h.Repository.GetResearchCount(h.Repository.GetResearchId()),
+		"OrderId":    h.Repository.GetOrderId(),
+		"orderCount": h.Repository.GetOrderCount(h.Repository.GetOrderId()),
 	})
 }
 
@@ -69,11 +69,10 @@ func (h *Handler) RequestHandler(ctx *gin.Context) {
 	if err != nil {
 		logrus.Error(err)
 	}
-	var indexes []repository.Index
-	indexes = h.Repository.GetResearchIndexes(id)
+	var indexes []repository.Index = h.Repository.GetOrderIndexes(id)
 
 	ctx.HTML(http.StatusOK, "request_page.html", gin.H{
-		"researchIndexes": indexes,
+		"orderIndexes": indexes,
 		"count":           len(indexes),
 	})
 }
