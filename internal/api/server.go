@@ -26,6 +26,8 @@ func StartServer() {
 	r.GET("/indexes", handler.GetIndexes)
 	r.GET("/index/:id", handler.GetIndex)
 	r.GET("/request/:id", handler.RequestHandler)
+	r.GET("/request/:id/up:num", handler.RequestHandler)
+	r.GET("/request/:id/down:num", handler.RequestHandler)
 	r.Run()
 	log.Println("Server down")
 }

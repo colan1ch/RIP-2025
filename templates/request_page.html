@@ -3,59 +3,46 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
-        <title>SQL Analyzer</title>
-    <link rel="stylesheet" href="/static/styles/globals.css" />
-    <link rel="stylesheet" href="/static/styles/style.css" />
+    <link rel="stylesheet" href="/static/styles/request_page_style.css" />
   </head>
   <body>
-    <div class="macbook-air">
-      <div class="div">
-        <div class="overlap-group">
-          <div class="main">
-            <div class="frame">
-              <div class="grid-container">
-                  {{range .researchIndexes}}
-                  <div class="group">
-                    <a href="/index/{{.ID}}" style="text-decoration:none;color:inherit;">
-                      <div class="text-wrapper-2">{{.Name}}</div>
-                    </a>
-                    <div class="text-wrapper-3">cardinality: {{.Cardinality}}</div>
-                    <p class="p">Количество строк в таблице: {{.RowsCount}}</p>
-                    <p class="text-wrapper-4">Время выполнения запроса: {{.ExecutionTime}}</p>
-                    <a href="/index/{{.ID}}">
-                      <img class="image" src="{{.Image}}" />
-                    </a>
-                    <a href="/index/{{.ID}}">
-                      <div class="rectangle-2"><div class="text-wrapper-5">Подробнее</div></div>
-                    </a>
-                  </div>
-                  {{end}}
+    <div class="request-page">
+      <div class="main">
+        <div class="frame">
+          <div class="grid-container">
+            {{range .researchIndexes}}
+            <div class="div">
+              <div class="text-wrapper">{{.Cardinality}}</div>
+              <img class="card" src="{{.Image}}" />
+              <div class="text-wrapper-2">{{.Name}}</div>
+              <a href="/index/{{.ID}}" style="grid-row: 3 / 4; grid-column: 1 / 2;">
+                <div class="rectangle"><div class="text-wrapper-3">Подробнее</div></div>
+              </a>
+              <div class="text-wrapper-4">{{.RowsCount}}</div>
+              <div class="text-wrapper-5">{{.RecievedRows}}</div>
+              <div class="frame-2">
+                <div class="div-wrapper"><div class="text-wrapper-6">↑</div></div>
+                <div class="div-wrapper"><div class="text-wrapper-6">↓</div></div>
               </div>
             </div>
-          </div>
-          <div class="frame-wrapper">
-            <div class="logo-no-bg-preview-wrapper">
-              <a href="/indexes" aria-label="Open home page">
-                <img class="logo-no-bg-preview" src="http://127.0.0.1:9000/sqlanalyzer/logo.png" />
-              </a>
-            </div>
+            {{end}}
           </div>
         </div>
-        <div class="frame-2"></div>
+      </div>
+      <div class="frame-5"></div>
+      <div class="logo-no-bg-preview-wrapper">
+        <a href="/indexes">
+        <img class="logo-no-bg-preview" src="/static/img/logo.png" />
+        </a>
+      </div>
+      <div class="cardinality-wrapper"><div class="cardinality">Время выполнения SQL-запроса: 492мс</div></div>
+      <div class="frame-6-wrapper">
+        <div class="frame-6">
+            <div class="cardinality-2">кол-во полученных<br />строк</div>
+            <div class="cardinality-3">кол-во строк<br />в таблице</div>
+            <div class="text-wrapper-10">cardinality</div>
+        </div>
       </div>
     </div>
-    <script>
-      (function () {
-        var frame = document.querySelector('.macbook-air .frame-wrapper');
-        if (!frame) return;
-        var onScroll = function () {
-          var y = window.scrollY || window.pageYOffset;
-          if (y > 20) frame.classList.add('small');
-          else frame.classList.remove('small');
-        };
-        window.addEventListener('scroll', onScroll, { passive: true });
-        onScroll();
-      })();
-    </script>
   </body>
 </html>

@@ -20,7 +20,7 @@ type Index struct {
 	Description string
 	Cardinality int
 	RowsCount   int
-	ExecutionTime float32
+	RecievedRows int
 }
 
 func (r *Repository) GetIndexes() ([]Index, error) {
@@ -28,66 +28,66 @@ func (r *Repository) GetIndexes() ([]Index, error) {
 	indexes := []Index{
 		{
 			ID:          1,
-			Image:       "http://127.0.0.1:9000/sqlanalyzer/b-tree.png",
-			Name:        "B-Tree index",
-			Description: "Это самый распространенный и стандартный тип индекса.\nОн отлично подходит для поиска по диапазону и точечного поиска.",
+			Image:       "http://127.0.0.1:9000/sqlanalyzer/card1.jpeg",
+			Name:        "Player(club_id)",
+			Description: "Индекс для поиска игроков по\nклубу (частые запросы по\nигрокам определенного клуба)",
 			Cardinality: 130,
 			RowsCount: 564,
-			ExecutionTime: 0,
+			RecievedRows: 52,
 		},
 		{
 			ID:          2,
-			Image:       "http://127.0.0.1:9000/sqlanalyzer/hash_index.png",
-			Name:        "Hash index",
-			Description: "Значительно быстрее B-tree для простых сравнений на равенство,\nно не поддерживает сортировку и диапазонные запросы.",
+			Image:       "http://127.0.0.1:9000/sqlanalyzer/card2.jpeg",
+			Name:        "Player(position)",
+			Description: "Индекс для поиска игроков по\nпозиции (фильтрация по\n амплуа)",
 			Cardinality: 86,
 			RowsCount: 1027,
-			ExecutionTime: 0,
+			RecievedRows: 33,
 		},
 		{
 			ID:          3,
-			Image:       "http://127.0.0.1:9000/sqlanalyzer/gist_index.png",
-			Name:        "GiST index",
-			Description: "Геометрические данные (поиск пересечений, соседей),\nполнотекстовый поиск (вектор tsvector), диапазоны.",
+			Image:       "http://127.0.0.1:9000/sqlanalyzer/card3.jpeg",
+			Name:        "Match(match_date)",
+			Description: "Индекс для поиска матчей по\nдате (анализ матчей за\nпериод)",
 			Cardinality: 52,
 			RowsCount: 879,
-			ExecutionTime: 0,
+			RecievedRows: 645,
 		},
 		{
 			ID:          4,
-			Image:       "http://127.0.0.1:9000/sqlanalyzer/sp-gist.png",
-			Name:        "SP-GiST index",
-			Description: "Эффективный поиск по данным, которые можно рекурсивно разделять\nна непересекающиеся области: IP-адреса, точки на плоскости, строки.",
+			Image:       "http://127.0.0.1:9000/sqlanalyzer/card4.jpeg",
+			Name:        "Match\n(tournament_id)",
+			Description: "Индекс для поиска матчей по\nтурниру (анализ матчей\nконкретного турнира)",
 			Cardinality: 36,
 			RowsCount: 377,
-			ExecutionTime: 0,
+			RecievedRows: 52,
 		},
 		{
 			ID:          5,
-			Image:       "http://127.0.0.1:9000/sqlanalyzer/gin_index.png",
-			Name:        "GIN index",
-			Description: "Идеален для массивов (поиск массива, содержащего элемент),\nJSONB (поиск по ключу или значению) и полнотекстового поиска.",
+			Image:       "http://127.0.0.1:9000/sqlanalyzer/card5.jpeg",
+			Name:        "Player_stats(player_id)",
+			Description: "Индекс для статистики\nигрока в матче",
 			Cardinality: 87,
 			RowsCount: 950,
-			ExecutionTime: 0,
+			RecievedRows: 13,
 		},
 		{
 			ID:          6,
-			Image:       "http://127.0.0.1:9000/sqlanalyzer/brin_index.png",
-			Name:        "BRIN index",
-			Description: "Хранит не каждое значение, а только минимальное и максимальное\nзначение для каждого блока (или диапазона) данных на диске.",
+			Image:       "http://127.0.0.1:9000/sqlanalyzer/card6.jpeg",
+			Name:        "Player_Stats(goals)",
+			Description: "Индекс для поиска лучших\nбомбардиров (анализ по голам)",
 			Cardinality: 83,
 			RowsCount: 398,
-			ExecutionTime: 0,
+			RecievedRows: 5,
 		},
 		{
 			ID:          7,
-			Image:       "http://127.0.0.1:9000/sqlanalyzer/unique_index.png",
-			Name:        "Unique index",
-			Description: "Особый вид индекса, который обеспечивает уникальность данных\nв проиндексированном столбце или группе столбцов.",
+			Image:       "http://127.0.0.1:9000/sqlanalyzer/card7.jpeg",
+			Name:        "Coach(club_id)",
+			Description: "Индекс для поиска тренеров по клубу (поиск тренерского штаба)",
 			Cardinality: 52,
 			RowsCount: 444,
-			ExecutionTime: 0,
+			RecievedRows: 13,
 		},
 	}
 	if len(indexes) == 0 {

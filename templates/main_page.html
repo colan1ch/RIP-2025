@@ -3,72 +3,48 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
-        <title>SQL Analyzer</title>
-    <link rel="stylesheet" href="/static/styles/globals.css" />
-    <link rel="stylesheet" href="/static/styles/style.css" />
+    <link rel="stylesheet" href="/static/styles/main_page_style.css" />
   </head>
   <body>
-    <div class="macbook-air">
-      <div class="div">
-        <div class="overlap-group">
-          <div class="main">
-            <div class="frame">
-              <div class="grid-container">
-                <form class="search-content-list" method="get" action="/indexes">
-                  <div class="icone"><img class=icone src="http://127.0.0.1:9000/sqlanalyzer/search_icon.svg"></div>
+    <div class="main-page">
+      <div class="main">
+        <div class="frame">
+          <div class="grid-container">
+            <div class="search-content-list">
+              <form class="search-content-list" method="get" action="/indexes">
+                  <div class="search-icon"><img class=search-icon src="/static/img/search_icon.svg"></div>
                   <div class="div-wrapper"><input type="text" name="query" class="text-wrapper" placeholder="Поиск по названию" value="{{.query}}" /></div>
                   <button type="submit" style="display:none"></button>
                 </form>
-                  {{if .indexes}}
-                    {{range .indexes}}
-                    <div class="group">
-                      <a href="/index/{{.ID}}" style="text-decoration:none;color:inherit;">
-                        <div class="text-wrapper-2">{{.Name}}</div>
-                      </a>
-                      <div class="text-wrapper-3">cardinality: {{.Cardinality}}</div>
-                      <p class="p">Количество строк в таблице: {{.RowsCount}}</p>
-                      <p class="text-wrapper-4">{{.Description}}</p>
-                      <a href="/index/{{.ID}}">
-                        <img class="image" src="{{.Image}}" />
-                      </a>
-                      <div class="rectangle"><div class="text-wrapper-5">Добавить в заявку</div></div>
-                    </div>
-                    {{end}}
-                  {{else}}
-                    <div style="padding:2rem;font-family: 'Public Sans-Regular', Helvetica;font-weight: 400;text-align:center;color:#888;">Ничего не найдено</div>
-                  {{end}}
-              </div>
             </div>
-          </div>
-          <div class="frame-wrapper">
-            <div class="logo-no-bg-preview-wrapper">
-              <a href="/indexes" aria-label="Open home page">
-                <img class="logo-no-bg-preview" src="http://127.0.0.1:9000/sqlanalyzer/logo.png" />
+            {{if not .indexes}}
+            <div class="not-found-message">По вашему запросу ничего не найдено</div>
+            {{else}}
+            {{range .indexes}}
+            <div class="frame-2">
+              <a href="/index/{{.ID}}">
+                <div class="b-tree-index"><div class="b-tree-index-2">{{.Name}}</div></div>
+                <div class="card-wrapper"><img class="card" src="{{.Image}}" /></div>
               </a>
+              <p class="p">{{.Description}}</p>
             </div>
-          </div>
-          <div class="image-wrapper" style="display:flex;align-items:center;gap:8px;">
-            <a href="/request/{{ .researchId }}">
-              <img class="img" src="http://127.0.0.1:9000/sqlanalyzer/file_icon.svg" />
-            </a>
-            <span style="font-size:1.2rem;font-weight:bold;color:#333;">{{.researchCount}}</span>
+            {{end}}
+            {{end}}
           </div>
         </div>
-        <div class="frame-2"></div>
       </div>
+      <div class="frame-9">
+        <a href="/request/1">
+        <img class="image-2" src="/static/img/file_icon.svg" />
+        </a>
+        <div class="text-wrapper-8">{{.researchCount}}</div>
+      </div>
+      <div class="logo-no-bg-preview-wrapper">
+        <a href="/indexes">
+        <img class="logo-no-bg-preview" src="/static/img/logo.png" />
+        </a>
+      </div>
+      <div class="frame-10"></div>
     </div>
-    <script>
-      (function () {
-        var frame = document.querySelector('.macbook-air .frame-wrapper');
-        if (!frame) return;
-        var onScroll = function () {
-          var y = window.scrollY || window.pageYOffset;
-          if (y > 20) frame.classList.add('small');
-          else frame.classList.remove('small');
-        };
-        window.addEventListener('scroll', onScroll, { passive: true });
-        onScroll();
-      })();
-    </script>
   </body>
 </html>
