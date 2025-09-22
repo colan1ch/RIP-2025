@@ -10,21 +10,29 @@
       <div class="main">
         <div class="frame">
           <div class="grid-container">
-            {{range .orderIndexes}}
+            {{ range $i, $index := .orderIndexes }}
+              {{ range $param := $.order.IndexesParametrs }}
+                {{ if eq $param.IndexId $index.ID }}
             <div class="div">
-              <div class="text-wrapper">{{.Cardinality}}</div>
-              <img class="card" src="{{.Image}}" />
-              <div class="text-wrapper-2">{{.Name}}</div>
-              <a href="/index/{{.ID}}" style="grid-row: 3 / 4; grid-column: 1 / 2;">
+              <div class="text-wrapper">{{$param.Cardinality}}</div>
+              <img class="card" src="{{$index.Image}}" />
+              <div class="text-wrapper-2">{{$index.Name}}</div>
+              <a href="/index/{{$index.ID}}" style="grid-row: 3 / 4; grid-column: 1 / 2;">
                 <div class="rectangle"><div class="text-wrapper-3">Подробнее</div></div>
               </a>
-              <div class="text-wrapper-4">{{.RowsCount}}</div>
-              <div class="text-wrapper-5">{{.RecievedRows}}</div>
+              <div class="text-wrapper-4">{{$param.RowsCount}}</div>
+              <div class="text-wrapper-5">{{$param.RecievedRows}}</div>
               <div class="frame-2">
-                <div class="div-wrapper"><div class="text-wrapper-6">↑</div></div>
-                <div class="div-wrapper"><div class="text-wrapper-6">↓</div></div>
+                <a href="/request/{{$.orderID}}/up/{{$i}}">
+                  <div class="div-wrapper"><div class="text-wrapper-6">↑</div></div>
+                </a>
+                <a href="/request/{{$.orderID}}/down/{{$i}}">
+                  <div class="div-wrapper"><div class="text-wrapper-6">↓</div></div>
+                </a>
               </div>
             </div>
+            {{end}}
+            {{end}}
             {{end}}
           </div>
         </div>
@@ -35,7 +43,7 @@
         <img class="logo-no-bg-preview" src="/static/img/logo.png" />
         </a>
       </div>
-      <div class="cardinality-wrapper"><div class="cardinality">Время выполнения SQL-запроса: 492мс</div></div>
+      <div class="cardinality-wrapper"><div class="cardinality">Время выполнения SQL-запроса: {{.order.ExecutionTime}}мс</div></div>
       <div class="frame-6-wrapper">
         <div class="frame-6">
             <div class="cardinality-2">кол-во полученных<br />строк</div>

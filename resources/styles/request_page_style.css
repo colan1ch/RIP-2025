@@ -85,6 +85,7 @@
   height: 100px;
   aspect-ratio: 1;
   object-fit: cover;
+  margin-bottom:40px;
 }
 
 .request-page .text-wrapper-2 {
