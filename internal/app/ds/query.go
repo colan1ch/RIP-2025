@@ -16,7 +16,7 @@ const (
 )
 
 type Query struct {
-	ID           uint   `gorm:"primaryKey"`
+	ID           uint   `gorm:"primaryKey;autoIncrement"`
 	DateQuery time.Time
 	Status       string `gorm:"type:varchar(15);not null;check:status IN ('draft','deleted','formed','completed','rejected')"`
 	DateCreate   time.Time `gorm:"not null"`

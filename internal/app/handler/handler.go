@@ -29,14 +29,14 @@ func (h *Handler) RegisterHandler(router *gin.Engine) {
 	router.POST("/indexes/:id/add-to-query", h.AddIndexToQuery)
 	router.POST("/query/:id/delete-query", h.DeleteQuery)
 	router.GET("/query/:id/update-rows-count/:indexId", h.UpdateRowsCount)
-	router.GET("/query/:id/update-recieved-rows/:indexId", h.UpdateRecievedRows)
+	router.GET("/query/:id/update-cardinality/:indexId", h.UpdateCardinality)
 	router.GET("/query/:id/update-table-field/:indexId", h.UpdateTableField)
 
 }
 
 func (h *Handler) RegisterStatic(router *gin.Engine) {
-	router.LoadHTMLGlob("/Users/nachernev/Desktop/rip_lab2/templates/*")
-	router.Static("/static", "/Users/nachernev/Desktop/rip_lab2/resources")
+	router.LoadHTMLGlob("/Users/nachernev/Desktop/rip_lab3/templates/*")
+	router.Static("/static", "/Users/nachernev/Desktop/rip_lab3/resources")
 }
 
 func (h *Handler) errorHandler(ctx *gin.Context, errorStatusCode int, err error) {

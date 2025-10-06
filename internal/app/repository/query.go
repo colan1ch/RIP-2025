@@ -46,7 +46,7 @@ func (r *Repository) GetIndexesQuery(id int) ([]ds.IndexInfo, ds.Query, error) {
 					Name:              	index.Name,
 					Image:            	index.Image,
 
-					Cardinality:         index.Cardinality,
+					Cardinality:         indexesQuery.Cardinality,
 					
 					RowsCount: 		indexesQuery.RowsCount,
 					RecievedRows:       indexesQuery.RecievedRows,
@@ -121,8 +121,8 @@ func (r *Repository) UpdateRowsCount(queryId int, indexId int, rowsCount int) er
 	return r.db.Exec("UPDATE indexes_queries SET rows_count = ? WHERE query_id = ? AND index_id = ?", rowsCount, queryId, indexId).Error
 }
 
-func (r *Repository) UpdateRecievedRows(queryId int, indexId int, recievedRows int) error{
-	return r.db.Exec("UPDATE indexes_queries SET recieved_rows = ? WHERE query_id = ? AND index_id = ?", recievedRows, queryId, indexId).Error
+func (r *Repository) UpdateCardinality(queryId int, indexId int, cardinality int) error{
+	return r.db.Exec("UPDATE indexes_queries SET cardinality = ? WHERE query_id = ? AND index_id = ?", cardinality, queryId, indexId).Error
 }
 
 func (r *Repository) UpdateTableField(queryId int, indexId int, tableField string) error{

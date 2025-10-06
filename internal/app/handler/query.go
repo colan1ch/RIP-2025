@@ -71,10 +71,10 @@ func (h *Handler) UpdateRowsCount(ctx *gin.Context){
 	ctx.Redirect(http.StatusFound, "/query/"+idStr)
 }
 
-func (h *Handler) UpdateRecievedRows(ctx *gin.Context){
+func (h *Handler) UpdateCardinality(ctx *gin.Context){
 	idStr := ctx.Param("id")
 	indexIdStr := ctx.Param("indexId")
-	recievedRowsStr := ctx.Query("recievedRows")
+	cardinalityStr := ctx.Query("cardinality")
 	queryId, err := strconv.Atoi(idStr) // так как функция выше возвращает нам строку, нужно ее преобразовать в int
 	if err != nil {
 		logrus.Error(err)
@@ -83,12 +83,12 @@ func (h *Handler) UpdateRecievedRows(ctx *gin.Context){
 	if err != nil {
 		logrus.Error(err)
 	}
-	recievedRows, err := strconv.Atoi(recievedRowsStr) // так как функция выше возвращает нам строку, нужно ее преобразовать в int
+	cardinality, err := strconv.Atoi(cardinalityStr) // так как функция выше возвращает нам строку, нужно ее преобразовать в int
 	if err != nil {
 		logrus.Error(err)
 	}
 
-	err = h.Repository.UpdateRecievedRows(queryId, indexId, recievedRows)
+	err = h.Repository.UpdateCardinality(queryId, indexId, cardinality)
 	if err != nil {
 		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return
