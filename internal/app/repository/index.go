@@ -23,28 +23,6 @@ func (r *Repository) GetIndexes() ([]ds.Index, error) {
 }
 
 func (r *Repository) GetIndex(id int) (*ds.Index, error) {
-// 	query := "SELECT id, image, name, description, distance, mass, discovery, star_radius FROM indexes WHERE id = $1"
-// 	row := r.db.Raw(query, id).Row()
-// 	index := &ds.Index{}
-
-//    err := row.Scan(
-// 		&index.ID,
-//       &index.Image,
-//       &index.Name,
-//       &index.Description,
-//       &index.Distance,
-//       &index.Mass,
-// 	  &index.Discovery,
-//       &index.StarRadius,
-//    )
-//    if err != nil {
-//       if errors.Is(err, sql.ErrNoRows) {
-//          return nil, nil // Возвращаем nil, если записи нет
-//       }
-//       return nil, err
-//    }
-// 	return index, nil
-
 	index := ds.Index{}
 	err := r.db.Order("id").Where("id = ? and is_delete = ?", id, false).First(&index).Error
 	if err != nil {

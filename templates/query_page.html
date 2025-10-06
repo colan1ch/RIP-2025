@@ -13,13 +13,20 @@
             {{ range $i, $index := .queryIndexes }}
             <div class="div">
               <div class="text-wrapper">{{$index.Cardinality}}</div>
+              <form class="text-wrapper-0" method="get" action="/query/{{$.query.ID}}/update-table-field/{{$index.ID}}">
+                <div class="text-wrapper-0"><input class="input-text" type="text" name="tableField" class="text-wrapper"  value="{{$index.TableField}}" /></div>
+              </form>
               <img class="card" src="{{$index.Image}}" />
               <div class="text-wrapper-2">{{$index.PositionInQuery}}. {{$index.Name}}</div>
               <a href="/indexes/{{$index.ID}}" style="grid-row: 3 / 4; grid-column: 1 / 2;">
                 <div class="rectangle"><div class="text-wrapper-3">Подробнее</div></div>
               </a>
-              <div class="text-wrapper-4">{{$index.RowsCount}}</div>
-              <div class="text-wrapper-5">{{$index.RecievedRows}}</div>
+              <form class="text-wrapper-4" method="get" action="/query/{{$.query.ID}}/update-rows-count/{{$index.ID}}">
+                <div class="text-wrapper-4"><input class="input-text" type="text" name="rowsCount" class="text-wrapper"  value="{{$index.RowsCount}}" /></div>
+              </form>
+              <form class="text-wrapper-5" method="get" action="/query/{{$.query.ID}}/update-recieved-rows/{{$index.ID}}">
+                <div class="text-wrapper-5"><input class="input-text" type="text" name="recievedRows" class="text-wrapper" value="{{$index.RecievedRows}}" /></div>
+              </form>
               <!-- <div class="frame-2">
                 <a href="/query/{{$.queryID}}/up/{{$i}}">
                   <div class="div-wrapper"><div class="text-wrapper-6">↑</div></div>
@@ -43,9 +50,11 @@
         <form action="/query/{{ .query.ID }}/delete-query" style="width: 260px; margin-left: 0;" method="post">
           <button class="rectangle" >Удалить заявку</button>
         </form>
-        <div class="cardinality">Время выполнения SQL-запроса: {{.query.ExecutionTime}}мс</div></div>
+        <div class="cardinality">Время выполнения SQL-запроса: {{.query.ExecutionTime}}мс</div>
+        <div class="cardinality">Кол-во полученных строк: {{(index .queryIndexes .count1).RecievedRows}}</div></div>
       <div class="frame-6-wrapper">
         <div class="frame-6">
+            <div class="field">поле таблицы</div>
             <div class="cardinality-2">кол-во полученных<br />строк</div>
             <div class="cardinality-3">кол-во строк<br />в таблице</div>
             <div class="text-wrapper-10">cardinality</div>

@@ -8,7 +8,7 @@ type IndexesQuery struct {
 
 	RowsCount int
 	RecievedRows int
-
+	TableField string
 	
 	Query Query `gorm:"foreignKey:QueryID"`
 	Index    Index    `gorm:"foreignKey:IndexID"`

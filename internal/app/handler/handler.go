@@ -28,6 +28,10 @@ func (h *Handler) RegisterHandler(router *gin.Engine) {
 	// router.GET("/request/:id/down/:num", h.QueryHandlerDown)
 	router.POST("/indexes/:id/add-to-query", h.AddIndexToQuery)
 	router.POST("/query/:id/delete-query", h.DeleteQuery)
+	router.GET("/query/:id/update-rows-count/:indexId", h.UpdateRowsCount)
+	router.GET("/query/:id/update-recieved-rows/:indexId", h.UpdateRecievedRows)
+	router.GET("/query/:id/update-table-field/:indexId", h.UpdateTableField)
+
 }
 
 func (h *Handler) RegisterStatic(router *gin.Engine) {

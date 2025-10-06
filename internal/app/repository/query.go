@@ -28,7 +28,7 @@ func (r *Repository) GetIndexesQuery(id int) ([]ds.IndexInfo, ds.Query, error) {
 
 	var indexes []ds.Index
 	var indexesQueryes []ds.IndexesQuery
-	sub := r.db.Table("indexes_queries").Where("query_id = ?", query.ID).Find(&indexesQueryes)
+	sub := r.db.Table("indexes_queries").Where("query_id = ?", query.ID).Find(&indexesQueryes).Order("id")
 	err = r.db.Where("id IN (?)", sub.Select("index_id")).Find(&indexes).Error
 	if err != nil {
 		return []ds.IndexInfo{}, ds.Query{}, err
@@ -51,6 +51,7 @@ func (r *Repository) GetIndexesQuery(id int) ([]ds.IndexInfo, ds.Query, error) {
 					RowsCount: 		indexesQuery.RowsCount,
 					RecievedRows:       indexesQuery.RecievedRows,
 					PositionInQuery: position,
+					TableField: indexesQuery.TableField,
 				})
 				break
 			}
@@ -114,4 +115,16 @@ func (r *Repository) GetQueryCount() int64 {
 
 func (r *Repository) DeleteQuery(queryId int) error{
 	return r.db.Exec("UPDATE queries SET status = 'deleted' WHERE id = ?", queryId).Error
+}
+
+func (r *Repository) UpdateRowsCount(queryId int, indexId int, rowsCount int) error{
+	return r.db.Exec("UPDATE indexes_queries SET rows_count = ? WHERE query_id = ? AND index_id = ?", rowsCount, queryId, indexId).Error
+}
+
+func (r *Repository) UpdateRecievedRows(queryId int, indexId int, recievedRows int) error{
+	return r.db.Exec("UPDATE indexes_queries SET recieved_rows = ? WHERE query_id = ? AND index_id = ?", recievedRows, queryId, indexId).Error
+}
+
+func (r *Repository) UpdateTableField(queryId int, indexId int, tableField string) error{
+	return r.db.Exec("UPDATE indexes_queries SET table_field = ? WHERE query_id = ? AND index_id = ?", tableField, queryId, indexId).Error
 }

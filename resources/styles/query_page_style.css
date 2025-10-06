@@ -55,6 +55,27 @@
   height: 250px;
 }
 
+.text-wrapper-0 {
+  grid-column: 2 / 3;
+  width: 108px;
+  height: 21px;
+  white-space: nowrap;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-row: 2 / 3;
+  justify-self: center;
+  align-self: center;
+  font-family: "Public Sans-Regular", Helvetica;
+  font-weight: 400;
+  color: #000000;
+  font-size: 32px;
+  text-align: center;
+  letter-spacing: 0;
+  line-height: 20.2px;
+}
+
 .request-page .text-wrapper {
   grid-column: 3 / 4;
   width: 13px;
@@ -161,9 +182,16 @@
   line-height: 20.2px;
 }
 
+.input-text {
+  border: none;
+  width: 120px;
+  font-size: 32px;
+  text-align: center;
+}
+
 .request-page .text-wrapper-5 {
   grid-column: 5 / 6;
-  width: 65px;
+  width: 120px;
   height: 23px;
   white-space: nowrap;
   position: relative;
@@ -415,7 +443,7 @@
   z-index: 5;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   grid-template-rows: repeat(1, minmax(0, 1fr));
-  width: 1080px;
+  width: 1200px;
   height: 68px;
   gap: 100px 10px;
   padding: 10px;
@@ -423,6 +451,23 @@
   top: 213px;
   left: 0;
   background-color: #000000;
+}
+
+.request-page .field {
+  grid-row: 1 / 2;
+  grid-column: 2 / 3;
+  justify-self: center;
+  align-self: center;
+  width: 109px;
+  height: 21px;
+  color: #ffffff;
+  white-space: nowrap;
+  position: relative;
+  font-family: "Public Sans-Regular", Helvetica;
+  font-weight: 400;
+  font-size: 22px;
+  letter-spacing: 0;
+  line-height: 20.2px;
 }
 
 .request-page .cardinality-2 {
