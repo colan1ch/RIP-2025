@@ -5,19 +5,19 @@ import (
 	"time"
 )
 
-type OrderStatus string
+type QueryStatus string
 
 const (
-  OrderStatusDraft     OrderStatus = "draft"
-  OrderStatusDeleted   OrderStatus = "deleted"
-  OrderStatusFormed    OrderStatus = "formed"
-  OrderStatusCompleted OrderStatus = "completed"
-  OrderStatusRejected  OrderStatus = "rejected"
+  QueryStatusDraft     QueryStatus = "draft"
+  QueryStatusDeleted   QueryStatus = "deleted"
+  QueryStatusFormed    QueryStatus = "formed"
+  QueryStatusCompleted QueryStatus = "completed"
+  QueryStatusRejected  QueryStatus = "rejected"
 )
 
-type Order struct {
+type Query struct {
 	ID           uint   `gorm:"primaryKey"`
-	DateOrder time.Time
+	DateQuery time.Time
 	Status       string `gorm:"type:varchar(15);not null;check:status IN ('draft','deleted','formed','completed','rejected')"`
 	DateCreate   time.Time `gorm:"not null"`
 	DateForm    sql.NullTime  `gorm:"default:null"`
@@ -25,7 +25,7 @@ type Order struct {
 	CreatorID    int       `gorm:"not null"`
 	ModeratorID sql.NullInt64 `gorm:"default:null"`
 
-	Creator Users `gorm:"foreignKey:CreatorID"`
-	Moderator Users `gorm:"foreignKey:ModeratorID"`
+	Creator User `gorm:"foreignKey:CreatorID"`
+	Moderator User `gorm:"foreignKey:ModeratorID"`
 	ExecutionTime int
 }

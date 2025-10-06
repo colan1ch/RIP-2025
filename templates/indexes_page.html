@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="/static/styles/main_page_style.css" />
+    <link rel="stylesheet" href="/static/styles/indexes_page_style.css" />
   </head>
   <body>
     <div class="main-page">
@@ -13,7 +13,7 @@
             <div class="search-content-list">
               <form class="search-content-list" method="get" action="/indexes">
                   <div class="search-icon"><img class=search-icon src="/static/img/search_icon.svg"></div>
-                  <div class="div-wrapper"><input type="text" name="query" class="text-wrapper" placeholder="Поиск по названию" value="{{.query}}" /></div>
+                  <div class="div-wrapper"><input type="text" name="indexSearch" class="text-wrapper" placeholder="Поиск по названию" value="{{.query}}" /></div>
                   <button type="submit" style="display:none"></button>
                 </form>
             </div>
@@ -22,12 +22,12 @@
             {{else}}
             {{range .indexes}}
             <div class="frame-2">
-              <a href="/index/{{.ID}}">
+              <a href="/indexes/{{.ID}}">
                 <div class="b-tree-index"><div class="b-tree-index-2">{{.Name}}</div></div>
                 <div class="card-wrapper"><img class="card" src="{{.Image}}" /></div>
               </a>
               <p class="p">{{.Description}}</p>
-              <form action="/index/{{ .ID }}/add-to-order" style="width: 260px; margin-left: 0;" method="post">
+              <form action="/indexes/{{ .ID }}/add-to-query" style="width: 260px; margin-left: 0;" method="post">
                 <button type="submit" class="rectangle">Добавить в заявку</button>
               </form>
             </div>
@@ -37,10 +37,10 @@
         </div>
       </div>
       <div class="frame-9">
-        <a href="/request/{{.orderId}}">
+        <a href="/query/{{.queryId}}">
         <img class="image-2" src="/static/img/file_icon.svg" />
         </a>
-        <div class="text-wrapper-8">{{.orderCount}}</div>
+        <div class="text-wrapper-8">{{.queryCount}}</div>
       </div>
       <div class="logo-no-bg-preview-wrapper">
         <a href="/indexes">

@@ -15,8 +15,8 @@ func (h *Handler) GetIndexes(ctx *gin.Context) {
 	var err error
 	creatorID := h.Repository.GetUser()
 
-	searchQuery := ctx.Query("query")
-	if searchQuery == "" {
+	indexSearch := ctx.Query("indexSearch")
+	if indexSearch == "" {
 		indexes, err = h.Repository.GetIndexes()
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -26,7 +26,7 @@ func (h *Handler) GetIndexes(ctx *gin.Context) {
 			return
 		}
 	} else {
-		indexes, err = h.Repository.GetIndexesByName(searchQuery)
+		indexes, err = h.Repository.GetIndexesByName(indexSearch)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
@@ -35,13 +35,13 @@ func (h *Handler) GetIndexes(ctx *gin.Context) {
 			return
 		}
 	}
-	currentOrder, _ := h.Repository.CheckCurrentOrderDraft(creatorID)
+	currentQuery, _ := h.Repository.CheckCurrentQueryDraft(creatorID)
 
-	ctx.HTML(http.StatusOK, "main_page.html", gin.H{
+	ctx.HTML(http.StatusOK, "indexes_page.html", gin.H{
 		"indexes":       indexes,
-		"orderCount": h.Repository.GetOrderCount(),
-		"query":         searchQuery,
-		"orderId":    currentOrder.ID,
+		"queryCount": h.Repository.GetQueryCount(),
+		"indexSearch":         indexSearch,
+		"queryId":    currentQuery.ID,
 	})
 }
 
@@ -65,15 +65,15 @@ func (h *Handler) GetIndex(ctx *gin.Context) {
 		return
 	}
 
-	ctx.HTML(http.StatusOK, "product_page.html", gin.H{
+	ctx.HTML(http.StatusOK, "index_page.html", gin.H{
 		"index": index,
 	})
 }
 
 
-func (h *Handler) AddIndexToOrder(ctx *gin.Context) {
-	order, err := h.Repository.GetOrderDraft(h.Repository.GetUser())
-	orderId := order.ID
+func (h *Handler) AddIndexToQuery(ctx *gin.Context) {
+	query, err := h.Repository.GetQueryDraft(h.Repository.GetUser())
+	queryId := query.ID
 	if err != nil {
 		h.errorHandler(ctx, http.StatusBadRequest, err)
 		return
@@ -85,7 +85,7 @@ func (h *Handler) AddIndexToOrder(ctx *gin.Context) {
 		return
 	}
 
-	err = h.Repository.AddIndexToOrder(int(orderId), indexId)
+	err = h.Repository.AddIndexToQuery(int(queryId), indexId)
 	if err != nil {
 		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return

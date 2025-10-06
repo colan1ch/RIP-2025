@@ -9,4 +9,5 @@ type IndexInfo struct {
 
 	RowsCount int
 	RecievedRows int
+	PositionInQuery int
 }

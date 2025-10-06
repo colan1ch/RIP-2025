@@ -22,12 +22,12 @@ func NewHandler(r *repository.Repository) *Handler {
 
 func (h *Handler) RegisterHandler(router *gin.Engine) {
 	router.GET("/indexes", h.GetIndexes)
-	router.GET("/index/:id", h.GetIndex)
-	router.GET("/request/:id", h.OrderHandler)
-	// router.GET("/request/:id/up/:num", h.OrderHandlerUp)
-	// router.GET("/request/:id/down/:num", h.OrderHandlerDown)
-	router.POST("/index/:id/add-to-order", h.AddIndexToOrder)
-	router.POST("/request/:id/delete-order", h.DeleteOrder)
+	router.GET("/indexes/:id", h.GetIndex)
+	router.GET("/query/:id", h.QueryHandler)
+	// router.GET("/request/:id/up/:num", h.QueryHandlerUp)
+	// router.GET("/request/:id/down/:num", h.QueryHandlerDown)
+	router.POST("/indexes/:id/add-to-query", h.AddIndexToQuery)
+	router.POST("/query/:id/delete-query", h.DeleteQuery)
 }
 
 func (h *Handler) RegisterStatic(router *gin.Engine) {

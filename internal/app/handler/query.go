@@ -8,33 +8,33 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (h *Handler) OrderHandler(ctx *gin.Context) {
+func (h *Handler) QueryHandler(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr) // так как функция выше возвращает нам строку, нужно ее преобразовать в int
 	if err != nil {
 		logrus.Error(err)
 	}
-	orderIndexes, order, err := h.Repository.GetIndexesOrder(id)
+	queryIndexes, query, err := h.Repository.GetIndexesQuery(id)
 	if err != nil {
 		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return
 	}
-	ctx.HTML(http.StatusOK, "request_page.html", gin.H{
-		"orderIndexes": orderIndexes,
-		"order":        order,
-		"count":           h.Repository.GetOrderCount(),
+	ctx.HTML(http.StatusOK, "query_page.html", gin.H{
+		"queryIndexes": queryIndexes,
+		"query":        query,
+		"count":           h.Repository.GetQueryCount(),
 	})
 }
 
-func (h *Handler) DeleteOrder(ctx *gin.Context){
+func (h *Handler) DeleteQuery(ctx *gin.Context){
 	idStr := ctx.Param("id")
-	orderId, err := strconv.Atoi(idStr) // так как функция выше возвращает нам строку, нужно ее преобразовать в int
+	queryId, err := strconv.Atoi(idStr) // так как функция выше возвращает нам строку, нужно ее преобразовать в int
 	if err != nil {
 		logrus.Error(err)
 	}
 
 
-	err = h.Repository.DeleteCalculation(orderId)
+	err = h.Repository.DeleteQuery(queryId)
 	if err != nil {
 		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return
