@@ -21,17 +21,38 @@ func NewHandler(r *repository.Repository) *Handler {
 }
 
 func (h *Handler) RegisterHandler(router *gin.Engine) {
-	router.GET("/indexes", h.GetIndexes)
-	router.GET("/indexes/:id", h.GetIndex)
-	router.GET("/query/:id", h.QueryHandler)
-	// router.GET("/request/:id/up/:num", h.QueryHandlerUp)
-	// router.GET("/request/:id/down/:num", h.QueryHandlerDown)
-	router.POST("/indexes/:id/add-to-query", h.AddIndexToQuery)
-	router.POST("/query/:id/delete-query", h.DeleteQuery)
-	router.GET("/query/:id/update-rows-count/:indexId", h.UpdateRowsCount)
-	router.GET("/query/:id/update-cardinality/:indexId", h.UpdateCardinality)
-	router.GET("/query/:id/update-table-field/:indexId", h.UpdateTableField)
+	router.GET("api/indexes", h.GetIndexes)
+	router.GET("api/indexes/:id", h.GetIndex)
+	router.POST("/api/indexes/:id/add-to-query", h.AddIndexToQuery)
+	router.POST("/api/indexes/create-index", h.CreateIndex)
+	router.DELETE("/api/indexes/:id/delete-index", h.DeleteIndex)
+	router.PUT("/api/indexes/:id/change-index", h.ChangeIndex)
+	router.POST("/api/indexes/:id/create-image", h.UploadImage)
 
+	// router.GET("/queries/:id", h.QueryHandler)
+	// router.GET("/queries/:id/up/:num", h.QueryHandlerUp)
+	// router.GET("/queries/:id/down/:num", h.QueryHandlerDown)
+	// router.GET("/queries/:id/update-rows-count/:indexId", h.UpdateRowsCount)
+	// router.GET("/queries/:id/update-cardinality/:indexId", h.UpdateCardinality)
+	// router.GET("/queries/:id/update-table-field/:indexId", h.UpdateTableField)
+
+	// router.POST("api/queries/:id/delete-query", h.DeleteQuery)
+	router.GET("/api/queries/query-cart", h.GetQueryCart)	
+	router.GET("/api/queries", h.GetQueries)
+	router.GET("/api/queries/:id", h.GetQuery)
+	router.PUT("/api/queries/:id/change-query", h.ChangeQuery)
+	router.PUT("/api/queries/:id/form", h.FormQuery)
+	router.PUT("/api/queries/:id/finish", h.ModerateQuery)
+	router.DELETE("/api/queries/:id/delete-query", h.DeleteQuery)
+
+	router.DELETE("/api/indexes_query/:index_id/:query_id", h.DeleteIndexFromQuery)
+	router.PUT("/api/indexes_query/:index_id/:query_id", h.ChangeIndexQuery)
+
+	router.POST("/api/users/sign-up", h.CreateUser)
+	router.GET("/api/users/profile", h.GetProfile)
+	router.PUT("/api/users/profile", h.ChangeProfile)
+	router.POST("/api/users/sign-in", h.SignIn)
+	router.POST("/api/users/sign-out", h.SignOut)
 }
 
 func (h *Handler) RegisterStatic(router *gin.Engine) {
