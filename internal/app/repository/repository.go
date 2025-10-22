@@ -42,7 +42,7 @@ func NewRepository(dsn string) (*Repository, error) {
 }
 
 func (r *Repository) GetUserID() (int) {
-	return r.userId
+	return 1
 }
 
 func (r *Repository) SetUserID(id int) {

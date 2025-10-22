@@ -93,9 +93,9 @@ func (h *Handler) DeleteIndex(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"status": "deleted",
-	})
+	// ctx.JSON(http.StatusOK, gin.H{
+	// 	"status": "deleted",
+	// })
 }
 
 func (h *Handler) ChangeIndex(ctx *gin.Context){
@@ -190,7 +190,7 @@ func (h *Handler) UploadImage(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"status": "uploaded",
+		// "status": "uploaded",
 		"index": apitypes.IndexToJSON(index),
 	})
 }

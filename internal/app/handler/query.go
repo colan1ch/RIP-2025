@@ -61,8 +61,10 @@ func (h *Handler) GetQueryCart(ctx *gin.Context){
 
 	if indexesCount == 0 {
 		ctx.JSON(http.StatusOK, gin.H{
-			"status":          "no_draft",
-			"indexes_count": indexesCount,
+			// "status":          "no_draft",
+			// "indexes_count": indexesCount,
+			"id": -1,
+			"indexes_count": -1,
 		})
 		return
 	}
@@ -73,8 +75,10 @@ func (h *Handler) GetQueryCart(ctx *gin.Context){
 			h.errorHandler(ctx, http.StatusUnauthorized, err)
 		} else if errors.Is(err, repository.ErrNoDraft) {
 			ctx.JSON(http.StatusOK, gin.H{
-				"status":          "no_draft",
-				"indexes_count": 0,
+				// "status":          "no_draft",
+				// "indexes_count": 0,
+				"id": -1,
+				"indexes_count": -1,
 			})
 		} else {
 			h.errorHandler(ctx, http.StatusInternalServerError, err)

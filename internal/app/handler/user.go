@@ -122,6 +122,6 @@ func (h *Handler) ChangeProfile(ctx *gin.Context) {
 func (h *Handler) SignOut(ctx *gin.Context) {
 	h.Repository.SignOut()
 	ctx.JSON(http.StatusOK, gin.H{
-		"status": "signed_out",
+		// "status": "signed_out",
 	})
 }
