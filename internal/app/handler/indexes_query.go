@@ -10,6 +10,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// DeleteIndexFromQuery godoc
+// @Summary Удалить индекс из запроса
+// @Description Удаляет связь индекса и запроса
+// @Tags indexes-query
+// @Produce json
+// @Param index_id path int true "ID индекса"
+// @Param query_id path int true "ID запроса"
+// @Success 200 {object} apitypes.QueryJSON "Обновленный запрос"
+// @Failure 400 {object} map[string]string "Неверные ID"
+// @Failure 403 {object} map[string]string "Доступ запрещен"
+// @Failure 404 {object} map[string]string "Не найдено"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
+// @Router /indexes_query/{index_id}/{query_id} [delete]
 func (h *Handler) DeleteIndexFromQuery(ctx *gin.Context) {
 	queryId, err := strconv.Atoi(ctx.Param("query_id"))
 	if err != nil {
@@ -44,6 +58,21 @@ func (h *Handler) DeleteIndexFromQuery(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, apitypes.QueryToJSON(query, creatorLogin, moderatorLogin))
 }
 
+// ChangeIndexQuery godoc
+// @Summary Изменить данные индекса в запросе
+// @Description Обновляет параметры индекса в конкретном запросе
+// @Tags indexes-query
+// @Accept json
+// @Produce json
+// @Param index_id path int true "ID индекса"
+// @Param query_id path int true "ID запроса"
+// @Param data body apitypes.IndexesQueryJSON true "Новые данные"
+// @Success 200 {object} apitypes.IndexesQueryJSON "Обновленные данные"
+// @Failure 400 {object} map[string]string "Неверные данные"
+// @Failure 404 {object} map[string]string "Не найдено"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Security ApiKeyAuth
+// @Router /indexes_query/{index_id}/{query_id} [put]
 func (h *Handler) ChangeIndexQuery(ctx *gin.Context) {
 	queryId, err := strconv.Atoi(ctx.Param("query_id"))
 	if err != nil {

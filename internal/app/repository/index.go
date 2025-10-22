@@ -34,7 +34,7 @@ func (r *Repository) GetIndex(id int) (*ds.Index, error) {
 	err := r.db.Order("id").Where("id = ? and is_delete = ?", id, false).First(&index).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fmt.Errorf("%w:  планета  с id %d", ErrNotFound, id)
+			return nil, fmt.Errorf("%w:  индекс  с id %d", ErrNotFound, id)
 		}
 		return &ds.Index{}, err
 	}
@@ -51,6 +51,7 @@ func (r *Repository) GetIndexesByName(name string) ([]ds.Index, error) {
 }
 
 func (r *Repository) CreateIndex(indexJSON apitypes.IndexJSON) (ds.Index, error) {
+	fmt.Print("Creating index with data:", indexJSON)
 	index := apitypes.IndexFromJSON(indexJSON)
 	// if index.StarRadius <= 0 {
 	// 	return ds.Index{}, errors.New("неправильный радиус звезды")
@@ -59,6 +60,7 @@ func (r *Repository) CreateIndex(indexJSON apitypes.IndexJSON) (ds.Index, error)
 	// 	return ds.Index{}, errors.New("нерпавильная масса")
 	// }
 	err := r.db.Create(&index).First(&index).Error
+	fmt.Println("Created index:", index)
 	if err != nil {
 		return ds.Index{}, err
 	}
@@ -68,18 +70,15 @@ func (r *Repository) CreateIndex(indexJSON apitypes.IndexJSON) (ds.Index, error)
 func (r *Repository) ChangeIndex(id int, indexJSON apitypes.IndexJSON) (ds.Index, error) {
 	index := ds.Index{}
 	if id < 0 {
-		return ds.Index{}, errors.New("id должно быть >= 0")
+		return ds.Index{}, errors.New("id индекса должен быть >= 0")
 	}
 	err := r.db.Where("id = ? and is_delete = ?", id, false).First(&index).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ds.Index{}, fmt.Errorf("%w: планета с id %d", ErrNotFound, id)
+			return ds.Index{}, fmt.Errorf("%w: индекс с id %d", ErrNotFound, id)
 		}
 		return ds.Index{}, err
 	}
-	// if indexJSON.StarRadius <= 0 {
-	// 	return ds.Index{}, errors.New("нерпавильный радиус звезды")
-	// }
 	err = r.db.Model(&index).Updates(apitypes.IndexFromJSON(indexJSON)).Error
 	if err != nil {
 		return ds.Index{}, err
@@ -96,7 +95,7 @@ func (r *Repository) DeleteIndex(id int) error {
 	err := r.db.Where("id = ? and is_delete = ?", id, false).First(&index).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return fmt.Errorf("%w: планета с id %d", ErrNotFound, id)
+			return fmt.Errorf("%w: индекс с id %d", ErrNotFound, id)
 		}
 		return err
 	}
@@ -126,7 +125,7 @@ func (r *Repository) AddIndexToQuery(queryId int, indexId int) error {
 	var query ds.Query
 	if err := r.db.First(&query, queryId).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return fmt.Errorf("%w: исследование с id %d", ErrNotFound, queryId)
+			return fmt.Errorf("%w: запрос с id %d", ErrNotFound, queryId)
 		}
 		return err
 	}
@@ -137,7 +136,7 @@ func (r *Repository) AddIndexToQuery(queryId int, indexId int) error {
 		return result.Error
 	}
 	if result.RowsAffected != 0 {
-		return fmt.Errorf("%w: планета %d уже в исследованиии %d", ErrAlreadyExists, indexId, queryId)
+		return fmt.Errorf("%w: индекс %d уже в запросе %d", ErrAlreadyExists, indexId, queryId)
 	}
 	return r.db.Create(&ds.IndexesQuery{
 		IndexID:    uint(indexId),
@@ -153,10 +152,10 @@ func (r *Repository) GetModeratorAndCreatorLogin(query ds.Query) (string, string
 	if err != nil {
 		return "", "", err
 	}
-
+	// fmt.Println(creator.Login)
 	var moderatorLogin string
 	if query.ModeratorID.Valid {
-		err = r.db.Where("id = ?", query.ModeratorID.Int64).First(&moderator).Error
+		err = r.db.Where("id = ?", query.ModeratorID).First(&moderator).Error
 		if err != nil {
 			return "", "", err
 		}

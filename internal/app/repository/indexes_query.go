@@ -24,7 +24,7 @@ func (r *Repository) DeleteIndexFromQuery(queryId int, indexId int) (ds.Query, e
 	err := r.db.Where("id = ?", queryId).First(&query).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ds.Query{}, fmt.Errorf("%w: исследование с id %d", ErrNotFound, queryId)
+			return ds.Query{}, fmt.Errorf("%w: запрос с id %d", ErrNotFound, queryId)
 		}
 		return ds.Query{}, err
 	}
@@ -45,7 +45,7 @@ func (r *Repository) ChangeIndexQuery(queryId int, indexId int, indexesQueryJSON
 	err := r.db.Model(&indexesQuery).Where("index_id = ? and query_id = ?", indexId, queryId).Updates(apitypes.IndexesQueryFromJSON(indexesQueryJSON)).First(&indexesQuery).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ds.IndexesQuery{}, fmt.Errorf("%w: планеты в исследовании", ErrNotFound)
+			return ds.IndexesQuery{}, fmt.Errorf("%w: индексы в запросе", ErrNotFound)
 		}
 		return ds.IndexesQuery{}, err
 	}

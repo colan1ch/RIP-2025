@@ -1,0 +1,978 @@
+basePath: /api/v1
+definitions:
+  apitypes.IndexJSON:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      is_delete:
+        type: boolean
+      name:
+        type: string
+    type: object
+  apitypes.IndexesQueryJSON:
+    properties:
+      cardinality:
+        type: integer
+      id:
+        type: integer
+      index_id:
+        type: integer
+      query_id:
+        type: integer
+      recieved_rows:
+        type: integer
+      rows_count:
+        type: integer
+      table_field:
+        type: string
+    type: object
+  apitypes.QueryJSON:
+    properties:
+      creator_login:
+        type: string
+      date_create:
+        type: string
+      date_finish:
+        type: string
+      date_form:
+        type: string
+      date_query:
+        type: string
+      execution_time:
+        type: integer
+      id:
+        type: integer
+      moderator_login:
+        type: string
+      status:
+        type: string
+    type: object
+  apitypes.StatusJSON:
+    properties:
+      status:
+        type: string
+    type: object
+  apitypes.UserJSON:
+    properties:
+      id:
+        type: string
+      is_moderator:
+        type: boolean
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+host: 127.0.0.1:8080
+info:
+  contact: {}
+  description: API для вычисления времени выполнения SQL-запросов
+  title: Query Execution Time Calculation API
+  version: "1.0"
+paths:
+  /indexes:
+    get:
+      description: Возвращает все индексы или фильтрует по названию
+      parameters:
+      - description: Название индекса для поиска
+        in: query
+        name: index_name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список индексов
+          schema:
+            items:
+              $ref: '#/definitions/apitypes.IndexJSON'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить список индексов
+      tags:
+      - indexes
+  /indexes/{id}:
+    get:
+      description: Возвращает информацию об индексе по её идентификатору
+      parameters:
+      - description: ID индекса
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные индекса
+          schema:
+            $ref: '#/definitions/apitypes.IndexJSON'
+        "400":
+          description: Неверный ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Индекс не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить индекс по ID
+      tags:
+      - indexes
+  /indexes/{id}/add-to-query:
+    post:
+      description: Добавляет индекс в черновик запроса пользователя
+      parameters:
+      - description: ID индекса
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Запрос с добавленным индексом
+          schema:
+            $ref: '#/definitions/apitypes.QueryJSON'
+        "201":
+          description: Создан новый запрос
+          schema:
+            $ref: '#/definitions/apitypes.QueryJSON'
+        "400":
+          description: Неверный запрос
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Индекс не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Индекс уже в запросе
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Добавить индекс в запрос
+      tags:
+      - indexes
+  /indexes/{id}/change-index:
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию об индексе по ID
+      parameters:
+      - description: ID индекса
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новые данные индекса
+        in: body
+        name: index
+        required: true
+        schema:
+          $ref: '#/definitions/apitypes.IndexJSON'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Обновленный индекс
+          schema:
+            $ref: '#/definitions/apitypes.IndexJSON'
+        "400":
+          description: Неверные данные
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Индекс не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Изменить данные индекса
+      tags:
+      - indexes
+  /indexes/{id}/create-image:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Загружает изображение для индекса и возвращает обновленные данные
+      parameters:
+      - description: ID индекса
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Изображение индекса
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Статус загрузки и данные индекса
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный запрос или файл
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Индекс не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Загрузить изображение для индекса
+      tags:
+      - indexes
+  /indexes/{id}/delete-index:
+    delete:
+      description: Выполняет логическое удаление индекса по ID
+      parameters:
+      - description: ID индекса
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Статус удаления
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Неверный ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Индекс не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Удалить индекс
+      tags:
+      - indexes
+  /indexes/create-index:
+    post:
+      consumes:
+      - application/json
+      description: Создает новый индекс и возвращает его данные
+      parameters:
+      - description: Данные нового индекса
+        in: body
+        name: index
+        required: true
+        schema:
+          $ref: '#/definitions/apitypes.IndexJSON'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Созданный индекс
+          schema:
+            $ref: '#/definitions/apitypes.IndexJSON'
+        "400":
+          description: Неверные данные
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Создать новый индекс
+      tags:
+      - indexes
+  /indexes_query/{index_id}/{query_id}:
+    delete:
+      description: Удаляет связь индекса и запроса
+      parameters:
+      - description: ID индекса
+        in: path
+        name: index_id
+        required: true
+        type: integer
+      - description: ID запроса
+        in: path
+        name: query_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Обновленный запрос
+          schema:
+            $ref: '#/definitions/apitypes.QueryJSON'
+        "400":
+          description: Неверные ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Доступ запрещен
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Не найдено
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Удалить индекс из запроса
+      tags:
+      - indexes-query
+    put:
+      consumes:
+      - application/json
+      description: Обновляет параметры индекса в конкретном запросе
+      parameters:
+      - description: ID индекса
+        in: path
+        name: index_id
+        required: true
+        type: integer
+      - description: ID запроса
+        in: path
+        name: query_id
+        required: true
+        type: integer
+      - description: Новые данные
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/apitypes.IndexesQueryJSON'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Обновленные данные
+          schema:
+            $ref: '#/definitions/apitypes.IndexesQueryJSON'
+        "400":
+          description: Неверные данные
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Не найдено
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Изменить данные индекса в запросе
+      tags:
+      - indexes-query
+  /queries:
+    get:
+      description: Возвращает запросы с возможностью фильтрации по датам и статусу
+      parameters:
+      - description: Начальная дата (YYYY-MM-DD)
+        in: query
+        name: from-date
+        type: string
+      - description: Конечная дата (YYYY-MM-DD)
+        in: query
+        name: to-date
+        type: string
+      - description: Статус запроса
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список запросов
+          schema:
+            items:
+              $ref: '#/definitions/apitypes.QueryJSON'
+            type: array
+        "400":
+          description: Неверный формат даты
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Получить список запросов
+      tags:
+      - queries
+  /queries/{id}:
+    get:
+      description: Возвращает полную информацию о запросе включая индексы
+      parameters:
+      - description: ID запроса
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные запроса с индексами
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Доступ запрещен
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Запрос не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Получить запрос по ID
+      tags:
+      - queries
+  /queries/{id}/change-query:
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные запроса
+      parameters:
+      - description: ID запроса
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новые данные запроса
+        in: body
+        name: query
+        required: true
+        schema:
+          $ref: '#/definitions/apitypes.QueryJSON'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Обновленный запрос
+          schema:
+            $ref: '#/definitions/apitypes.QueryJSON'
+        "400":
+          description: Неверные данные
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Запрос не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Изменить запрос
+      tags:
+      - queries
+  /queries/{id}/delete-query:
+    delete:
+      description: Выполняет логическое удаление запроса
+      parameters:
+      - description: ID запроса
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Статус удаления
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Неверный запрос
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Доступ запрещен
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Запрос не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Удалить запрос
+      tags:
+      - queries
+  /queries/{id}/finish:
+    put:
+      consumes:
+      - application/json
+      description: Изменяет статус запроса (только для модераторов)
+      parameters:
+      - description: ID запроса
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новый статус
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/apitypes.StatusJSON'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Результат модерации
+          schema:
+            $ref: '#/definitions/apitypes.QueryJSON'
+        "400":
+          description: Неверный запрос
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Доступ запрещен
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Запрос не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Модерировать запрос
+      tags:
+      - queries
+  /queries/{id}/form:
+    put:
+      description: Переводит запрос в статус "formed"
+      parameters:
+      - description: ID запроса
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Сформированный запрос
+          schema:
+            $ref: '#/definitions/apitypes.QueryJSON'
+        "400":
+          description: Неверный запрос
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Доступ запрещен
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Запрос не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Сформировать запрос
+      tags:
+      - queries
+  /queries/query-cart:
+    get:
+      description: Возвращает информацию о текущем черновике запроса пользователя
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные корзины запроса
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный запрос
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Получить корзину запроса
+      tags:
+      - queries
+  /users/{login}/profile:
+    get:
+      description: Возвращает данные профиля (доступен только тот, чей UUID совпадает
+        с user_id в токене).
+      parameters:
+      - description: Логин пользователя
+        in: path
+        name: login
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Профиль пользователя
+          schema:
+            $ref: '#/definitions/apitypes.UserJSON'
+        "400":
+          description: Проблема с авторизацией/получением user_id"}
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Пользователи не совпадают
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Пользователь не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Получить профиль пользователя
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Обновляет профиль пользователя (может делать только сам пользователь).
+      parameters:
+      - description: Логин пользователя
+        in: path
+        name: login
+        required: true
+        type: string
+      - description: Новые данные профиля
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/apitypes.UserJSON'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Обновлённый профиль
+          schema:
+            $ref: '#/definitions/apitypes.UserJSON'
+        "400":
+          description: Ошибка запроса или авторизации
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Доступ запрещён
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Пользователь не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Изменить профиль пользователя
+      tags:
+      - users
+  /users/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Принимает логин/пароль, возвращает jwt-токен в формате {"token":"..."}.
+      parameters:
+      - description: Логин и пароль
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/apitypes.UserJSON'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Неверный запрос
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Пользователь не найден
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Вход (получение токена)
+      tags:
+      - users
+  /users/sign-out:
+    post:
+      description: Удаляет токен текущего пользователя из хранилища. Возвращает {"status":"signed_out"}.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: status
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Проблема с получением user_id
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка при удалении токена
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Выход (удаление токена)
+      tags:
+      - users
+  /users/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Регистрирует нового пользователя. Возвращает URL созданного ресурса
+        в Location и тело созданного пользователя.
+      parameters:
+      - description: Параметры нового пользователя
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/apitypes.UserJSON'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Пользователь создан
+          schema:
+            $ref: '#/definitions/apitypes.UserJSON'
+        "400":
+          description: Ошибка валидации или входных данных
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Регистрация пользователя
+      tags:
+      - users
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

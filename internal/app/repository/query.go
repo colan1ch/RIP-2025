@@ -9,11 +9,11 @@ import (
 	"math"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
-var errNoDraft = errors.New("no draft for this user")
 
 func (r *Repository) GetQueries(from, to time.Time, status string) ([]ds.Query, error) {
 	var queries []ds.Query
@@ -34,7 +34,7 @@ func (r *Repository) GetQueries(from, to time.Time, status string) ([]ds.Query, 
 	return queries, nil
 }
 
-func (r *Repository) GetIndexesQueries(queryId uint) ([]ds.IndexesQuery, error) {
+func (r *Repository) GetIndexesQueries(queryId int) ([]ds.IndexesQuery, error) {
 	var indexesQueries []ds.IndexesQuery
 	err := r.db.Where("query_id = ?", queryId).Find(&indexesQueries).Error
 	if err != nil {
@@ -72,7 +72,7 @@ func (r *Repository) GetQueryIndexes(id int) ([]ds.Index, ds.Query, error) {
 	return indexes, query, nil
 }
 
-func (r *Repository) CheckCurrentQueryDraft(creatorID int) (ds.Query, error) {
+func (r *Repository) CheckCurrentQueryDraft(creatorID uuid.UUID) (ds.Query, error) {
     // if creatorID == 0 {
     //     return ds.Query{}, fmt.Errorf("%w: user not authenticated", ErrNotAllowed)
     // }
@@ -87,7 +87,7 @@ func (r *Repository) CheckCurrentQueryDraft(creatorID int) (ds.Query, error) {
 	return query, nil
 }
 
-func (r *Repository) GetQueryDraft(creatorID int) (ds.Query, bool, error) {
+func (r *Repository) GetQueryDraft(creatorID uuid.UUID) (ds.Query, bool, error) {
     // if creatorID == 0 {
     //     return ds.Query{}, false, fmt.Errorf("%w: user not authenticated", ErrNotAllowed)
     // }
@@ -110,10 +110,7 @@ func (r *Repository) GetQueryDraft(creatorID int) (ds.Query, bool, error) {
 	return query, true, nil
 }
 
-func (r *Repository) GetQueryCount(creatorID int) int64 {
-    if creatorID == 0 {
-        return 0
-    }
+func (r *Repository) GetQueryCount(creatorID uuid.UUID) int64 {
     
 	var count int64
 	query, err := r.CheckCurrentQueryDraft(creatorID)
@@ -128,7 +125,7 @@ func (r *Repository) GetQueryCount(creatorID int) int64 {
 	return count
 }
 
-func (r *Repository) DeleteQuery(queryId int) error{
+func (r *Repository) DeleteCalculation(queryId int) error{
 	return r.db.Exec("UPDATE queries SET status = 'deleted' WHERE id = ?", queryId).Error
 }
 
@@ -166,22 +163,13 @@ func (r *Repository) FormQuery(queryId int, status string) (ds.Query, error) {
 		return ds.Query{}, err
 	}
 
-	// user, err := r.GetUserByID(r.GetUserID())
-	// if err != nil{
-	// 	return ds.Query{}, fmt.Errorf("%w: пользователь на авторизирован", ErrNotAllowed)
-	// }
-
-	// if query.CreatorID != r.userId && !user.IsModerator{
-	// 	return ds.Query{}, fmt.Errorf("%w: у вас нет прав чтобы эта заявка имела статус %s", ErrNotAllowed, status)
-	// }
-
 	if query.Status != "draft" {
 		return ds.Query{}, fmt.Errorf("эта заявка не может быть %s", status)
 	}
 	
 	if status != "deleted"{
 		if query.DateQuery == "" {
-			return ds.Query{}, errors.New("вы не написали дату исследования")
+			return ds.Query{}, errors.New("вы не написали дату запроса")
 		}
 		indexesQuery, _ := r.GetIndexesQueries(query.ID)
 		for _, indexQuery := range indexesQuery {
@@ -217,12 +205,12 @@ func (r *Repository) ChangeQuery(id int, queryJSON apitypes.QueryJSON) (ds.Query
 		return ds.Query{}, errors.New("неправильное id, должно быть >= 0")
 	}
 	if queryJSON.DateQuery == "" {  
-		return ds.Query{}, errors.New("неправильная дата исследования")
+		return ds.Query{}, errors.New("неправильная дата запроса")
 	}
 	err := r.db.Where("id = ? and status != 'deleted'", id).First(&query).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ds.Query{}, fmt.Errorf("%w: исследование с id %d", ErrNotFound, id)
+			return ds.Query{}, fmt.Errorf("%w: запрос с id %d", ErrNotFound, id)
 		}
 		return ds.Query{}, err
 	}
@@ -235,7 +223,7 @@ func (r *Repository) ChangeQuery(id int, queryJSON apitypes.QueryJSON) (ds.Query
 
 func CalculateRecievedRows(cardinality int, dateQuery string, rows_count int) (int, error) {
 	if dateQuery == "" {
-		return 0, errors.New("неправильная дата исследования")
+		return 0, errors.New("неправильная дата запроса")
 	}
 	// if indexShine < 0 || indexShine > 7 {
 	// 	return 0, errors.New("неправильный блеск")
@@ -243,25 +231,16 @@ func CalculateRecievedRows(cardinality int, dateQuery string, rows_count int) (i
 	return rows_count - cardinality, nil
 }
 
-func (r *Repository) ModerateQuery(id int, status string) (ds.Query, error) {
+func (r *Repository) ModerateQuery(id int, status string, currUserId uuid.UUID) (ds.Query, error) {
 	if status != "completed" && status != "rejected" {
 		return ds.Query{}, errors.New("неверный статус")
-	}
-
-	user, err := r.GetUserByID(r.GetUserID())
-	if err != nil {
-		return ds.Query{}, err
-	}
-
-	if !user.IsModerator {
-		return ds.Query{}, fmt.Errorf("%w: вы не модератор", ErrNotAllowed)
 	}
 
 	query, err := r.GetSingleQuery(id)
 	if err != nil {
 		return ds.Query{}, err
 	} else if query.Status != "formed" {
-		return ds.Query{}, fmt.Errorf("этот запрос не может быть %s", status)
+		return ds.Query{}, errors.New("this calculation can not be " + status)
 	}
 
 	err = r.db.Model(&query).Updates(ds.Query{
@@ -270,14 +249,15 @@ func (r *Repository) ModerateQuery(id int, status string) (ds.Query, error) {
 			Time:  time.Now(),
 			Valid: true,
 		},
-		ModeratorID: sql.NullInt64{
-			Int64: int64(user.ID),
+		ModeratorID: uuid.NullUUID{
+			UUID:  currUserId,
 			Valid: true,
 		},
 	}).Error
-	if err != nil {
+		if err != nil {
 		return ds.Query{}, err
 	}
+
 
 	if status == "completed" {
 		indexesQuery, err := r.GetIndexesQueries(query.ID)
@@ -295,10 +275,6 @@ func (r *Repository) ModerateQuery(id int, status string) (ds.Query, error) {
 			return ds.Query{}, err
 		}
 		for _, indexQuery := range indexesQuery {
-			// index, err := r.GetIndex(int(indexQuery.IndexID))
-			// if err != nil {
-			// 	return ds.Query{}, err
-			// }
 			recievedRows, err := CalculateRecievedRows(indexQuery.Cardinality, query.DateQuery, indexQuery.RowsCount)
 			if err != nil {
 				return ds.Query{}, err
