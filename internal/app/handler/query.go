@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"LAB1/internal/app/api_types"
+	"LAB1/internal/app/ds"
 	"LAB1/internal/app/repository"
 
 	"github.com/gin-gonic/gin"
@@ -112,31 +113,62 @@ func (h *Handler) GetQuery(ctx *gin.Context) {
 		return
 	}
 
-	resp := make([]apitypes.IndexJSON, 0, len(indexes))
-	for _, r := range indexes {
-		resp = append(resp, apitypes.IndexToJSON(r))
-	}
-
 	creatorLogin, moderatorLogin, err := h.Repository.GetModeratorAndCreatorLogin(query)
 	if err != nil {
 		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
-	indexesQuery, _ := h.Repository.GetIndexesQueries(query.ID)
-	
-	resp2 := make([]apitypes.IndexesQueryJSON, 0, len(indexesQuery))
-	for _, r := range indexesQuery {
-		resp2 = append(resp2, apitypes.IndexesQueryToJSON(r))
+	indexesQuery, err := h.Repository.GetIndexesQueries(query.ID)
+	if err != nil {
+		h.errorHandler(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	// Создаем мап для быстрого доступа к данным indexesQuery по index_id
+	indexesQueryMap := make(map[int]ds.IndexesQuery)
+	for _, iq := range indexesQuery {
+		indexesQueryMap[int(iq.IndexID)] = iq
+	}
+
+	// Объединяем данные indexes и indexesQuery
+	combinedIndexes := make([]map[string]interface{}, 0, len(indexes))
+	for _, index := range indexes {
+		combined := make(map[string]interface{})
+		
+		// Добавляем поля из index
+		combined["id"] = index.ID
+		combined["is_delete"] = index.IsDelete
+		combined["image"] = index.Image
+		combined["name"] = index.Name
+		combined["description"] = index.Description
+		
+		// Добавляем поля из indexesQuery, если они есть
+		if iq, exists := indexesQueryMap[index.ID]; exists {
+			combined["query_id"] = iq.QueryID
+			combined["index_id"] = iq.IndexID
+			combined["rows_count"] = iq.RowsCount
+			combined["recieved_rows"] = iq.RecievedRows
+			combined["cardinality"] = iq.Cardinality
+			combined["table_field"] = iq.TableField
+		} else {
+			// Если данных нет, устанавливаем нулевые значения
+			combined["query_id"] = 0
+			combined["index_id"] = 0
+			combined["rows_count"] = 0
+			combined["recieved_rows"] = 0
+			combined["cardinality"] = 0
+			combined["table_field"] = ""
+		}
+		
+		combinedIndexes = append(combinedIndexes, combined)
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"query": apitypes.QueryToJSON(query, creatorLogin, moderatorLogin),
-		"indexes":   resp,
-		"indexesQuery": resp2,
+		"query":   apitypes.QueryToJSON(query, creatorLogin, moderatorLogin),
+		"indexes": combinedIndexes,
 	})
 }
-
 func (h *Handler) FormQuery(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
