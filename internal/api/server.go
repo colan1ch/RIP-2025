@@ -24,10 +24,10 @@ func StartServer() {
 	r.Static("/static", "/Users/nachernev/Desktop/rip/resources")
 
 	r.GET("/indexes", handler.GetIndexes)
-	r.GET("/index/:id", handler.GetIndex)
-	r.GET("/request/:id", handler.OrderHandler)
-	r.GET("/request/:id/up/:num", handler.OrderHandlerUp)
-	r.GET("/request/:id/down/:num", handler.OrderHandlerDown)
+	r.GET("/indexes/:id", handler.GetIndex)
+	r.GET("/queries/:id", handler.QueryHandler)
+	r.GET("/queries/:id/up/:num", handler.QueryHandlerUp)
+	r.GET("/queries/:id/down/:num", handler.QueryHandlerDown)
 	r.Run()
 	log.Println("Server down")
 }
