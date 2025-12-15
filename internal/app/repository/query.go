@@ -254,26 +254,26 @@ func (r *Repository) ModerateQuery(id int, status string, currUserId uuid.UUID) 
 		return ds.Query{}, err
 	}
 
-	if status == "completed" {
-		indexesQuery, err := r.GetIndexesQueries(query.ID)
-		if err != nil {
-			return ds.Query{}, err
-		}
+	// if status == "completed" {
+		// indexesQuery, err := r.GetIndexesQueries(query.ID)
+		// if err != nil {
+		// 	return ds.Query{}, err
+		// }
 		// executionTime будет рассчитан Django async сервисом и отправлен обратно
 		// Здесь мы просто рассчитываем recieved_rows для каждого индекса
-		for _, indexQuery := range indexesQuery {
-			recievedRows, err := CalculateRecievedRows(indexQuery.Cardinality, query.DateQuery, indexQuery.RowsCount)
-			if err != nil {
-				return ds.Query{}, err
-			}
-			err = r.db.Model(&indexQuery).Updates(ds.IndexesQuery{
-				RecievedRows: int(recievedRows),
-			}).Error
-			if err != nil {
-				return ds.Query{}, err
-			}
-		}
-	}
+		// for _, indexQuery := range indexesQuery {
+		// 	recievedRows, err := CalculateRecievedRows(indexQuery.Cardinality, query.DateQuery, indexQuery.RowsCount)
+		// 	if err != nil {
+		// 		return ds.Query{}, err
+		// 	}
+		// 	err = r.db.Model(&indexQuery).Updates(ds.IndexesQuery{
+		// 		RecievedRows: int(recievedRows),
+		// 	}).Error
+		// 	if err != nil {
+		// 		return ds.Query{}, err
+		// 	}
+		// }
+	// }
 	return query, nil
 }
 
