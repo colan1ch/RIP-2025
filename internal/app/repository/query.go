@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"LAB1/internal/app/api_types"
+	apitypes "LAB1/internal/app/api_types"
 	"LAB1/internal/app/ds"
 	"database/sql"
 	"errors"
@@ -13,7 +13,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
-
 
 func (r *Repository) GetQueries(from, to time.Time, status string) ([]ds.Query, error) {
 	var queries []ds.Query
@@ -73,10 +72,10 @@ func (r *Repository) GetQueryIndexes(id int) ([]ds.Index, ds.Query, error) {
 }
 
 func (r *Repository) CheckCurrentQueryDraft(creatorID uuid.UUID) (ds.Query, error) {
-    // if creatorID == 0 {
-    //     return ds.Query{}, fmt.Errorf("%w: user not authenticated", ErrNotAllowed)
-    // }
-    
+	// if creatorID == 0 {
+	//     return ds.Query{}, fmt.Errorf("%w: user not authenticated", ErrNotAllowed)
+	// }
+
 	var query ds.Query
 	res := r.db.Where("creator_id = ? AND status = ?", creatorID, "draft").Limit(1).Find(&query)
 	if res.Error != nil {
@@ -88,10 +87,10 @@ func (r *Repository) CheckCurrentQueryDraft(creatorID uuid.UUID) (ds.Query, erro
 }
 
 func (r *Repository) GetQueryDraft(creatorID uuid.UUID) (ds.Query, bool, error) {
-    // if creatorID == 0 {
-    //     return ds.Query{}, false, fmt.Errorf("%w: user not authenticated", ErrNotAllowed)
-    // }
-    
+	// if creatorID == 0 {
+	//     return ds.Query{}, false, fmt.Errorf("%w: user not authenticated", ErrNotAllowed)
+	// }
+
 	query, err := r.CheckCurrentQueryDraft(creatorID)
 	if errors.Is(err, ErrNoDraft) {
 		query = ds.Query{
@@ -111,7 +110,7 @@ func (r *Repository) GetQueryDraft(creatorID uuid.UUID) (ds.Query, bool, error) 
 }
 
 func (r *Repository) GetQueryCount(creatorID uuid.UUID) int64 {
-    
+
 	var count int64
 	query, err := r.CheckCurrentQueryDraft(creatorID)
 	if err != nil {
@@ -125,7 +124,7 @@ func (r *Repository) GetQueryCount(creatorID uuid.UUID) int64 {
 	return count
 }
 
-func (r *Repository) DeleteCalculation(queryId int) error{
+func (r *Repository) DeleteCalculation(queryId int) error {
 	return r.db.Exec("UPDATE queries SET status = 'deleted' WHERE id = ?", queryId).Error
 }
 
@@ -133,17 +132,17 @@ func (r *Repository) GetSingleQuery(id int) (ds.Query, error) {
 	if id < 0 {
 		return ds.Query{}, errors.New("неверное id, должно быть >= 0")
 	}
-    
-    // userId := r.GetUserID()
-    // if userId == 0 {
-    //     return ds.Query{}, fmt.Errorf("%w: пользователь не авторизирован", ErrNotAllowed)
-    // }
-    
+
+	// userId := r.GetUserID()
+	// if userId == 0 {
+	//     return ds.Query{}, fmt.Errorf("%w: пользователь не авторизирован", ErrNotAllowed)
+	// }
+
 	// user, err := r.GetUserByID(userId)
 	// if err != nil {
 	// 	return ds.Query{}, err
 	// }
-    
+
 	var query ds.Query
 	err := r.db.Where("id = ?", id).First(&query).Error
 	if err != nil {
@@ -151,7 +150,7 @@ func (r *Repository) GetSingleQuery(id int) (ds.Query, error) {
 			return ds.Query{}, fmt.Errorf("%w: заявка с id %d", ErrNotFound, id)
 		}
 		return ds.Query{}, err
-	} else if query.Status == "deleted"  {
+	} else if query.Status == "deleted" {
 		return ds.Query{}, fmt.Errorf("%w: заявка удалена", ErrNotAllowed)
 	}
 	return query, nil
@@ -166,24 +165,21 @@ func (r *Repository) FormQuery(queryId int, status string) (ds.Query, error) {
 	if query.Status != "draft" {
 		return ds.Query{}, fmt.Errorf("эта заявка не может быть %s", status)
 	}
-	
-	if status != "deleted"{
+
+	if status != "deleted" {
 		if query.DateQuery == "" {
 			return ds.Query{}, errors.New("вы не написали дату запроса")
 		}
 		indexesQuery, _ := r.GetIndexesQueries(query.ID)
 		for _, indexQuery := range indexesQuery {
-				if indexQuery.TableField == ""{
-					return ds.Query{}, errors.New("вы не написали поле таблицы, на которое хотите добавить индекс" )			
-				}
-				if indexQuery.RowsCount <= 0{
-					return ds.Query{}, errors.New("вы не написали количество строк в таблице" )			
-				}
-				if indexQuery.Cardinality <= 0 {
-					return ds.Query{}, errors.New("вы не написали кардинальность индекса" )
-				}
+			if indexQuery.RowsCount <= 0 {
+				return ds.Query{}, errors.New("вы не написали количество строк в таблице")
+			}
+			if indexQuery.Cardinality <= 0 {
+				return ds.Query{}, errors.New("вы не написали кардинальность индекса")
+			}
 		}
-	}	
+	}
 
 	err = r.db.Model(&query).Updates(ds.Query{
 		Status: status,
@@ -204,7 +200,7 @@ func (r *Repository) ChangeQuery(id int, queryJSON apitypes.QueryJSON) (ds.Query
 	if id < 0 {
 		return ds.Query{}, errors.New("неправильное id, должно быть >= 0")
 	}
-	if queryJSON.DateQuery == "" {  
+	if queryJSON.DateQuery == "" {
 		return ds.Query{}, errors.New("неправильная дата запроса")
 	}
 	err := r.db.Where("id = ? and status != 'deleted'", id).First(&query).Error
@@ -254,26 +250,17 @@ func (r *Repository) ModerateQuery(id int, status string, currUserId uuid.UUID) 
 			Valid: true,
 		},
 	}).Error
-		if err != nil {
+	if err != nil {
 		return ds.Query{}, err
 	}
-
 
 	if status == "completed" {
 		indexesQuery, err := r.GetIndexesQueries(query.ID)
 		if err != nil {
 			return ds.Query{}, err
 		}
-		executionTime, err := CalculateExecutionTime(indexesQuery)
-		if err != nil {
-			return ds.Query{}, err
-		}
-		err = r.db.Model(&query).Updates(ds.Query{
-			ExecutionTime: int(executionTime),
-		}).Error
-		if err != nil {
-			return ds.Query{}, err
-		}
+		// executionTime будет рассчитан Django async сервисом и отправлен обратно
+		// Здесь мы просто рассчитываем recieved_rows для каждого индекса
 		for _, indexQuery := range indexesQuery {
 			recievedRows, err := CalculateRecievedRows(indexQuery.Cardinality, query.DateQuery, indexQuery.RowsCount)
 			if err != nil {
@@ -298,4 +285,51 @@ func CalculateExecutionTime(indexesQuery []ds.IndexesQuery) (float64, error) {
 		pr *= float64(indexQuery.RowsCount) / float64(indexQuery.Cardinality)
 	}
 	return float64(sum + pr), nil
+}
+
+func (r *Repository) UpdateQueryStatus(id int, status string) (ds.Query, error) {
+	var query ds.Query
+	if err := r.db.Model(&query).Where("id = ?", id).Update("status", status).Error; err != nil {
+		return ds.Query{}, err
+	}
+	return query, nil
+}
+
+// GetQueryWithIndexes получает Query с preload связанных IndexesQueries
+func (r *Repository) GetQueryWithIndexes(queryID int) (ds.Query, error) {
+	var query ds.Query
+	if err := r.db.Preload("IndexesQueries").First(&query, queryID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ds.Query{}, fmt.Errorf("%w: query not found", ErrNotFound)
+		}
+		return ds.Query{}, err
+	}
+	return query, nil
+}
+
+// UpdateQueryExecutionTime обновляет время выполнения запроса
+func (r *Repository) UpdateQueryExecutionTime(queryID int, executionTime int) error {
+	if err := r.db.Model(&ds.Query{}).Where("id = ?", queryID).Update("execution_time", executionTime).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpdateIndexQueryReceivedRows обновляет количество полученных строк для IndexesQuery
+func (r *Repository) UpdateIndexQueryReceivedRows(indexID int, receivedRows int) error {
+	if err := r.db.Model(&ds.IndexesQuery{}).Where("id = ?", indexID).Update("recieved_rows", receivedRows).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetCompletedIndexesCount возвращает количество обработанных индексов
+func (r *Repository) GetCompletedIndexesCount(queryID int) (int, error) {
+	var count int64
+	if err := r.db.Model(&ds.IndexesQuery{}).
+		Where("query_id = ? AND recieved_rows > 0", queryID).
+		Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return int(count), nil
 }

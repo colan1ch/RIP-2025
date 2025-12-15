@@ -190,9 +190,9 @@ func (h *Handler) GetQuery(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"query": apitypes.QueryToJSON(query, creatorLogin, moderatorLogin),
-		"indexes": all,
-		// "indexes":   resp,
-		// "indexesQuery": resp2,
+		// "indexes": all,
+		"indexes":   resp,
+		"indexesQuery": resp2,
 	})
 }
 
@@ -386,6 +386,11 @@ func (h *Handler) ModerateQuery(ctx *gin.Context) {
         }
         return
     }
+
+	// Запускаем async расчет если статус = "completed"
+	if statusJSON.Status == "completed" {
+		h.TriggerAsyncCalculation(query.ID)
+	}
 
     creatorLogin, moderatorLogin, err := h.Repository.GetModeratorAndCreatorLogin(query)
     if err != nil {

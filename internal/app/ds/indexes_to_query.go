@@ -1,15 +1,14 @@
 package ds
 
 type IndexesQuery struct {
-	ID        uint `gorm:"primaryKey;autoIncrement"`
+	ID      uint `gorm:"primaryKey;autoIncrement"`
 	QueryID uint `gorm:"not null;uniqueIndex:idx_order_chat"`
-	IndexID    uint `gorm:"not null;uniqueIndex:idx_order_chat"`
+	IndexID uint `gorm:"not null;uniqueIndex:idx_order_chat"`
 
-	RowsCount int
+	RowsCount    int
 	RecievedRows int
-	Cardinality int
-	TableField string
-	
+	Cardinality  int
+
 	Query Query `gorm:"foreignKey:QueryID"`
-	Index    Index    `gorm:"foreignKey:IndexID"`
+	Index Index `gorm:"foreignKey:IndexID"`
 }

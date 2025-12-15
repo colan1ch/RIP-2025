@@ -31,6 +31,8 @@ func (h *Handler) RegisterHandler(router *gin.Engine) {
 	unauthorized.GET("/indexes/:id", h.GetIndex)
 	unauthorized.POST("/users/sign-in", h.SignIn)
 
+	unauthorized.POST("/queries/:id/results", h.UpdateQueryResult)
+
 	optionalauthorized := api.Group("/")
 	optionalauthorized.Use(h.WithOptionalAuthCheck())
 	optionalauthorized.GET("/queries/query-cart", h.GetQueryCart)

@@ -7,7 +7,7 @@ import (
 
 
 type QueryJSON struct {
-	ID                uint `json:"id"`
+	ID                int `json:"id"`
 	DateQuery       string `json:"date_query"`
 	Status          string `json:"status"`
 	DateCreate   time.Time `json:"date_create"`
@@ -40,7 +40,7 @@ func QueryToJSON(query ds.Query, creatorLogin string, moderatorLogin string) Que
 		DateCreate:   query.DateCreate,
 		DateForm:    dateForm,
 		DateFinish:  dateFinish,
-		CreatorLogin:    query.Creator.Login,
+		CreatorLogin:    creatorLogin,
 		ModeratorLogin: mLogin,
 		ExecutionTime:      query.ExecutionTime,
 	}
