@@ -3,7 +3,9 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
+	"os"
 
 	// "log"
 	"net/http"
@@ -14,8 +16,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const ASYNC_SERVICE_URL = "http://localhost:8000/api/calculate/"
-const SECRET_KEY = "SuperSecretKey"
+const ASYNC_SERVICE_URL = "http://localhost:8000/api/calculate-query-execution-time/"
+
 
 type AsyncIndexPayload struct {
 	IndexID        int    `json:"index_id"`
@@ -102,6 +104,7 @@ func (h *Handler) TriggerAsyncCalculation(queryID int) {
 
 // UpdateQueryResult получает результаты от async сервиса
 func (h *Handler) UpdateQueryResult(c *gin.Context) {
+	SECRET_KEY := os.Getenv("JWT_KEY")
 	var payload AsyncResultPayload
 	if err := c.BindJSON(&payload); err != nil {
 		h.errorHandler(c, http.StatusBadRequest, err)
@@ -112,7 +115,7 @@ func (h *Handler) UpdateQueryResult(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 	expectedAuth := "Bearer " + SECRET_KEY
 	if authHeader != expectedAuth {
-		h.errorHandler(c, http.StatusForbidden, nil)
+		h.errorHandler(c, http.StatusForbidden, fmt.Errorf("invalid authorization"))
 		return
 	}
 

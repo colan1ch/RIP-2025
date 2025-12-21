@@ -92,6 +92,17 @@ func (h *Handler) errorHandler(ctx *gin.Context, errorStatusCode int, err error)
 		errorMessage = err.Error()
 	}
 
+	switch errorStatusCode {
+	case http.StatusForbidden:
+		errorMessage = "Доступ запрещен"
+	case http.StatusUnauthorized:
+		errorMessage = "Требуется авторизация"
+	case http.StatusNotFound:
+		errorMessage = "Не найден"
+	default:
+		errorMessage = http.StatusText(errorStatusCode)
+	}
+
 	ctx.JSON(errorStatusCode, gin.H{
 		// "status":      "error",
 		"description": errorMessage,
