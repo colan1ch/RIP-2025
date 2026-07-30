@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/static/styles/index_page_style.css" />
+  </head>
+  <body>
+    <div class="product-page">
+      <div class="main">
+        <div class="frame">
+          <div class="grid-container">
+            <div class="text-wrapper">{{.index.Name}}</div>
+            <img class="image" src="{{.index.Image}}" />
+            <p class="div">{{.index.Description}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="logo-no-bg-preview-wrapper">
+        <a href="/indexes">
+        <img class="logo-no-bg-preview" src="/static/img/logo.png" />
+        </a>
+      </div>
+      <div class="frame-2"></div>
+      <!-- <div class="rectangle">
+        <div class="property-default"><div class="text-wrapper-2">Подробнее</div></div>
+        <div class="property">
+          <div class="rectangle-2"></div>
+          <div class="text-wrapper-3">Подробнее</div>
+        </div>
+      </div> -->
+    </div>
+  </body>
+</html>

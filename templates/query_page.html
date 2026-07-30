@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/static/styles/query_page_style.css" />
+  </head>
+  <body>
+    <div class="request-page">
+      <div class="main">
+        <div class="frame">
+          <div class="grid-container">
+            {{ range $i, $index := .queryIndexes }}
+            <div class="div">
+              <form class="text-wrapper" method="get" action="/query/{{$.query.ID}}/update-cardinality/{{$index.ID}}">
+                <div class="text-wrapper"><input class="input-text" type="text" name="cardinality" class="text-wrapper" value="{{$index.Cardinality}}" /></div>
+              </form>
+              <form class="text-wrapper-0" method="get" action="/query/{{$.query.ID}}/update-table-field/{{$index.ID}}">
+                <div class="text-wrapper-0"><input class="input-text" type="text" name="tableField" class="text-wrapper"  value="{{$index.TableField}}" /></div>
+              </form>
+              <img class="card" src="{{$index.Image}}" />
+              <div class="text-wrapper-2">{{$index.PositionInQuery}}. {{$index.Name}}</div>
+              <a href="/indexes/{{$index.ID}}" style="grid-row: 3 / 4; grid-column: 1 / 2;">
+                <div class="rectangle"><div class="text-wrapper-3">Подробнее</div></div>
+              </a>
+              <form class="text-wrapper-4" method="get" action="/query/{{$.query.ID}}/update-rows-count/{{$index.ID}}">
+                <div class="text-wrapper-4"><input class="input-text" type="text" name="rowsCount" class="text-wrapper"  value="{{$index.RowsCount}}" /></div>
+              </form>
+              <div class="text-wrapper-5">{{$index.RecievedRows}}</div>
+
+              <!-- <div class="frame-2">
+                <a href="/query/{{$.queryID}}/up/{{$i}}">
+                  <div class="div-wrapper"><div class="text-wrapper-6">↑</div></div>
+                </a>
+                <a href="/query/{{$.queryID}}/down/{{$i}}">
+                  <div class="div-wrapper"><div class="text-wrapper-6">↓</div></div>
+                </a>
+              </div> -->
+            </div>
+            {{end}}
+          </div>
+        </div>
+      </div>
+      <div class="frame-5"></div>
+      <div class="logo-no-bg-preview-wrapper">
+        <a href="/indexes">
+        <img class="logo-no-bg-preview" src="/static/img/logo.png" />
+        </a>
+      </div>
+      <div class="cardinality-wrapper">
+        <form action="/query/{{ .query.ID }}/delete-query" style="width: 260px; margin-left: 0;" method="post">
+          <button class="rectangle" >Удалить заявку</button>
+        </form>
+        <div class="cardinality">Время выполнения SQL-запроса: {{.query.ExecutionTime}}мс</div>
+        <div class="cardinality">Кол-во полученных строк: {{(index .queryIndexes .count1).RecievedRows}}</div></div>
+      <div class="frame-6-wrapper">
+        <div class="frame-6">
+            <div class="field">поле таблицы</div>
+            <div class="cardinality-2">кол-во полученных<br />строк</div>
+            <div class="cardinality-3">кол-во строк<br />в таблице</div>
+            <div class="text-wrapper-10">cardinality</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
